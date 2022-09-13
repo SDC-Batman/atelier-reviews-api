@@ -1,0 +1,22 @@
+{
+  "name": "atelier-reviews-api",
+  "version": "1.0.0",
+  "description": "Atlelier Reviews API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SDC-Batman/atelier-reviews-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SDC-Batman/atelier-reviews-api/issues"
+  },
+  "homepage": "https://github.com/SDC-Batman/atelier-reviews-api#readme",
+  "dependencies": {
+    "mongoose": "^6.6.0"
+  }
+}
