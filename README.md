@@ -1,1 +1,1 @@
-# rfp2207-atelier-reviews-api
+# atelier-reviews-api
