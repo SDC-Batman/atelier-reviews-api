@@ -13,3 +13,25 @@
   ```
 
 - [ ] Connect to Mongo DB.
+
+
+- [ ] Download data and add to `/data` folder.
+
+- [ ] Import CSV data into MongoDB from command line.
+  ```
+  mongoimport --collection="characteristics" --type=csv --headerline --file=characteristics.csv
+  ```
+
+  ```
+  mongoimport --collection="characteristic_reviews" --type=csv --headerline --file=characteristic_reviews.csv
+  ```
+
+  ```
+  mongoimport --collection="reviews" --type=csv --headerline --file=reviews.csv
+  ```
+
+  ```
+  mongoimport --collection="reviews_photos" --type=csv --headerline --file=reviews_photos.csv
+  ```
+
+  This will automatically store data in database `test`.
