@@ -44,19 +44,18 @@
 
   // convert photos object to array of review id
   // Set review_id as _id
+
   db.reviews_photos_test_transformed.aggregate(
     [
       {
         $group:
           {
             _id: "$review_id",
-            photos: { $addToSet: "$photo"}
+            photos: {
+              $push: "$photo"
+            }
           }
       },
-
-      // {
-      //   $sort: { "photos": 1}
-      // },
 
       {
         $out: "reviews_photos_test_transformed"
@@ -64,14 +63,28 @@
     ]
   );
 
+
+
+// Does not work with MongoDB 3.6, but should work with MongoDB 6.0
   // db.reviews_photos_test_transformed.aggregate(
   //   [
   //     {
-  //       $sortArray:
-  //       {
-  //         input: "$photos",
-  //         sortBy: {id: 1}
-  //       }
+  //       $group:
+  //         {
+  //           _id: "$review_id",
+  //           photos: {
+  //             $push: {
+  //               photo: {
+  //                 $each: [],
+  //                 $sort: {id: 1}
+  //               }
+  //             }
+  //           }
+  //         }
+  //     },
+
+  //     {
+  //       $out: "reviews_photos_test_transformed"
   //     }
   //   ]
   // );
