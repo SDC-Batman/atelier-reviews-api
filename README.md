@@ -34,4 +34,11 @@
   mongoimport --collection="reviews_photos" --type=csv --headerline --file=reviews_photos.csv
   ```
 
+- [ ] Transform data via aggregation pipelines:
+
+  ```
+    db.reviews_photos_test.aggregate([{$addFields: {"photos": {id: "$id", "url": "$url"} } }])
+  ```
+
   This will automatically store data in database `test`.
+
