@@ -34,6 +34,10 @@
   mongoimport --collection="reviews_photos" --type=csv --headerline --file=reviews_photos.csv
   ```
 
+  ```
+  mongoimport --collection="reviews_photos_test" --type=csv --headerline --file=reviews_photos_test.csv
+  ```
+
 - [ ] Transform data via aggregation pipelines:
 
   ```
