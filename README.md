@@ -17,26 +17,44 @@
 
 - [ ] Download data and add to `/data` folder.
 
-- [ ] Import CSV data into MongoDB from command line.
+
+- [ ] Import test CSV data into MongoDB from command line.
+
   ```
-  mongoimport --collection="characteristics" --type=csv --headerline --file=characteristics.csv
+  mongoimport -d reviews --collection="reviews_photos_test" --type=csv --headerline --file=reviews_photos_test.csv
   ```
 
   ```
-  mongoimport --collection="characteristic_reviews" --type=csv --headerline --file=characteristic_reviews.csv
+  mongoimport -d reviews --collection="characteristic_reviews_test" --type=csv --headerline --file=characteristic_reviews_test.csv
   ```
 
   ```
-  mongoimport --collection="reviews" --type=csv --headerline --file=reviews.csv
+  mongoimport -d reviews --collection="characteristics_test" --type=csv --headerline --file=characteristics_test.csv
   ```
 
   ```
-  mongoimport --collection="reviews_photos" --type=csv --headerline --file=reviews_photos.csv
+  mongoimport -d reviews --collection="reviews_test" --type=csv --headerline --file=reviews_test.csv
+  ```
+
+
+- [ ] Import production CSV data into MongoDB from command line.
+
+  ```
+  mongoimport -d reviews --collection="characteristics" --type=csv --headerline --file=characteristics.csv
   ```
 
   ```
-  mongoimport --collection="reviews_photos_test" --type=csv --headerline --file=reviews_photos_test.csv
+  mongoimport -d reviews --collection="characteristic_reviews" --type=csv --headerline --file=characteristic_reviews.csv
   ```
+
+  ```
+  mongoimport -d reviews --collection="reviews" --type=csv --headerline --file=reviews.csv
+  ```
+
+  ```
+  mongoimport -d reviews --collection="reviews_photos" --type=csv --headerline --file=reviews_photos.csv
+  ```
+
 
 - [ ] Transform data via aggregation pipelines:
 

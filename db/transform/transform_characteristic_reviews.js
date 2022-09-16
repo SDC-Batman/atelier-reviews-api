@@ -1,4 +1,9 @@
  // merge characteristics with characteristics reviews
+ // TO-DO:
+ // - more efficient join with indexes on each
+ // - join on both product_id and characteristic_id
+ // - benchmarking: time to complete!
+
  db.characteristic_reviews_test.aggregate(
   [
     {
@@ -26,34 +31,12 @@
     { $project: { characteristics: 0 } },
 
     {
-      $out: "characteristic_reviews_test_transformed"
+      $out: "characteristic_reviews_transformed_test"
     }
   ]);
 
-
-
-//   db.characteristic_reviews_test_transformed.aggregate(
-//     [
-//        {
-//           $project: {
-//              _id: 1,
-//              review_id: 1,
-//              product_id: 1,
-//              id: 1,
-//              name: 1,
-//              characteristic_id: 1,
-//              value: 1
-//           }
-//        },
-
-//       {
-//           $out: "characteristic_reviews_test_transformed_v2"
-//       }
-//     ]
-//  );
-
 // add characteristics field
-db.characteristic_reviews_test_transformed.aggregate(
+db.characteristic_reviews_transformed.aggregate(
   [
     {
       $addFields:
@@ -66,19 +49,19 @@ db.characteristic_reviews_test_transformed.aggregate(
     },
 
     {
-      $out: "characteristic_reviews_test_transformed_v2"
+      $out: "characteristic_reviews_transformed"
     }
   ]
 );
 
 
 // group characteristics for each review into an object
-db.characteristic_reviews_test_transformed_v2.aggregate(
+db.characteristic_reviews_transformed.aggregate(
   [
     {
       $group:
         {
-          _id: "$review_id",
+          _id: {review_id: "$review_id", product_id: "$product_id"},
           // product_id: "$product_id"
           names: {
             $push: "$name"
@@ -90,23 +73,36 @@ db.characteristic_reviews_test_transformed_v2.aggregate(
     },
 
     {
-      $out: "characteristic_reviews_test_transformed_v3"
+      $out: "characteristic_reviews_transformed"
     }
   ]
 );
 
 
-db.characteristic_reviews_test_transformed_v3.aggregate(
+db.characteristic_reviews_transformed.aggregate(
   [
     {
-      $zip:
-        {
-          inputs: ["$names", "$characteristics"]
+      $project: {
+        _id: 1,
+        characteristics: {
+          $zip:
+            {
+              inputs: ["$names", "$characteristics"]
+            }
         }
+      }
     },
 
     {
-      $out: "characteristic_reviews_test_transformed_v4"
+      $project: {
+         _id: "$_id.review_id",
+         product_id: "$_id.product_id",
+         characteristics: { $arrayToObject: "$characteristics" }
+      }
+    },
+
+    {
+      $out: "characteristic_reviews_transformed"
     }
   ]
 );
