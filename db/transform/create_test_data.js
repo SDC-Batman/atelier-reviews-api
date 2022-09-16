@@ -46,7 +46,7 @@ const parse = csv.parse(
 
 const transform = csv.format({ headers: true })
   .transform((row) => (
-    {
+     {
       id: Number(row.id),
       product_id: Number(row.product_id),
       rating: Number(row.rating),
@@ -67,6 +67,11 @@ fs.createReadStream(inputFile)
   .pipe(transform)
   .pipe(writeStream);
 
+// insertMany(reviewsArray, callback) {
+  // callback recursively calls insertMany with next batch
+  // wait for insertMany is complete before inserting next batch
+//}
+// initialize an empty array to store all reviews
 
 // csv.parseStream(readStream, { headers: true, maxRows: 5 })
 //     // .pipe(csv.parse({ headers: true, maxRows: 5 }))
@@ -74,7 +79,7 @@ fs.createReadStream(inputFile)
 //       id: Number(row.id),
 //       product_id: Number(row.product_id),
 //       rating: Number(row.rating),
-//       // date:
+//       date: row.date,
 //       summary: row.summary,
 //       body: row.body,
 //       recommend: row.recommend === 'true' ? true : false,
@@ -88,7 +93,10 @@ fs.createReadStream(inputFile)
 //     .on('data', row => console.log(row))
 //     // .pipe(writeStream)
 //     .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));
+//     // .on('end', insertMany());
 
+
+    // .on
 
 
 
