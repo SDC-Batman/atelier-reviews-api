@@ -25,7 +25,7 @@
   ```
 
   ```
-  mongoimport -d reviews --collection="characteristic_reviews_test" --type=csv --headerline --file=characteristic_reviews_test.csv
+  mongoimport -d reviews --collection="characteristic_reviews_test" --type=csv --headerline --columnsHaveTypes --fieldFile=reviews_field_file_with_types.txt --file=characteristic_reviews_test.csv
   ```
 
   ```
