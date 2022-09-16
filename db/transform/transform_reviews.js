@@ -1,3 +1,5 @@
+// select fields
+// modify id, date, and response fields
 db.reviews.aggregate(
   [
     {
@@ -22,3 +24,26 @@ db.reviews.aggregate(
     }
   ]
 );
+
+
+// join with reviews_photos_transformed to add photos
+db.reviews_transformed.aggregate(
+  [
+    {
+      $lookup:
+      {
+        from: "reviews_photos_transformed",
+        localField: "_id",
+        foreignField: "_id",
+        as: "photos"
+      }
+    },
+
+    {
+      $out: "reviews_transformed"
+    }
+  ]);
+
+
+// add index for product_id
+db.reviews_transformed.createIndex( { product_id: 1} );
