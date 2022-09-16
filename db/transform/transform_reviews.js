@@ -5,7 +5,7 @@ db.reviews.aggregate(
          _id: "$id",
          product_id: 1,
          rating: 1,
-         date: 1,
+         date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
          summary: 1,
          body: 1,
          recommend: 1,
