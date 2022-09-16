@@ -40,6 +40,10 @@ db.reviews_transformed.aggregate(
     },
 
     {
-      $out: "reviews_transformed_v2"
+      $out: "reviews_transformed"
     }
   ]);
+
+
+// add index for product_id
+db.reviews_transformed.createIndex( { product_id: 1} );
