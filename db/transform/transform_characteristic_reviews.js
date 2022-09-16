@@ -99,10 +99,15 @@ db.characteristic_reviews_test_transformed_v2.aggregate(
 db.characteristic_reviews_test_transformed_v3.aggregate(
   [
     {
-      $zip:
-        {
-          inputs: ["$names", "$characteristics"]
+      $project: {
+        _id: 1,
+        characteristics: {
+          $zip:
+            {
+              inputs: ["$names", "$characteristics"]
+            }
         }
+      }
     },
 
     {
