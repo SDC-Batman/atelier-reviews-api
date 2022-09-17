@@ -1,29 +1,70 @@
- // merge characteristics with characteristics reviews
-  db.characteristic_reviews.aggregate(
+// add indexes for characteristics and characteristic reviews for efficient merging in subsequent steps
+
+db.characteristic_reviews_transformed.drop();
+db.characteristics_transformed.drop();
+
+// db.characteristic_reviews_transformed.getIndexes()
+// db.characteristics_transformed.getIndexes()
+
+db.characteristic_reviews_test.aggregate(
+  [
+    {
+      $project: {
+        _id: "$id",
+        characteristic_id: 1,
+        review_id: 1,
+        value: 1
+      }
+    },
+
+    {
+      $out: "characteristic_reviews_transformed"
+    }
+  ]
+);
+
+db.characteristics_test.aggregate(
+  [
+    {
+      $project: {
+        _id: "$id",
+        product_id: 1,
+        name: 1
+      }
+    },
+
+    {
+      $out: "characteristics_transformed"
+    }
+  ]
+);
+
+
+// merge characteristics with characteristics reviews
+db.characteristic_reviews_transformed.aggregate(
   [
     {
       $lookup:
       {
-        from: "characteristics_test",
+        from: "characteristics_transformed",
         localField: "characteristic_id",
-        foreignField: "id",
+        foreignField: "_id",
         as: "characteristics"
       }
     },
 
-    {
-      $replaceRoot:
-      { newRoot:
-        {
-          $mergeObjects: [ {
-            $arrayElemAt: [ "$characteristics", 0 ] },
-            "$$ROOT"
-          ]
-        }
-      }
-    },
+    // {$unwind: '$characteristics'},
 
-    { $project: { characteristics: 0 } },
+    // {
+    //   $project: {
+    //     _id: 1,
+    //     review_id: 1,
+    //     product_id: "$characteristics.product_id",
+    //     characteristic_id: 1,
+    //     name: "$characteristics.name",
+    //     value: 1
+    //   }
+    // },
 
     {
       $out: "characteristic_reviews_transformed"
@@ -37,7 +78,7 @@ db.characteristic_reviews_transformed.aggregate(
       $addFields:
         {"characteristic":
           {
-              id: "$id",
+              id: "$_id",
               value: "$value"
           }
         }
@@ -104,3 +145,8 @@ db.characteristic_reviews_transformed.aggregate(
 
 // add index for product_id
 db.characteristic_reviews_transformed.createIndex( { product_id: 1} );
+
+// test
+// check size of dataset == # of distinct review_id
+db.characteristic_reviews_transformed.find().size();
+db.characteristic_reviews_transformed.distinct("_id").length;
