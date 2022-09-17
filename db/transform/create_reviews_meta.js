@@ -84,43 +84,64 @@ db.reviews_transformed.aggregate(
 
 
 // aggregate characteristics
-db.reviews_transformed.aggregate(
+// db.characteristic_reviews_transformed.aggregate(
+//   [
+
+//     {
+//       $group: {
+//         _id: {
+//           product_id: "$product_id",
+//           recommend: "$recommend"
+//         },
+//         count: {
+//           "$sum": 1
+//         }
+//       }
+//     },
+
+//     {
+//       $group: {
+//         _id: "$_id.product_id",
+//         recommendations: {
+//           $push: {
+//             k: {$convert: {input: "$_id.recommend", to: "string"}},
+//             v: {$convert: {input: "$count", to: "string"}}
+//           }
+//         }
+
+//       }
+//     },
+
+//     {
+//       $project: {
+//         _id: 1,
+//         ratings: { $arrayToObject: "$recommendations" }
+//       }
+//     },
+
+//     {
+//       $out: "reviews_meta_characteristics"
+//     }
+//   ]
+// );
+
+
+db.characteristic_reviews_transformed.aggregate(
   [
-
     {
       $group: {
-        _id: {
-          product_id: "$product_id",
-          recommend: "$recommend"
-        },
-        count: {
-          "$sum": 1
-        }
+        _id: "$product_id",
+        averageSize: { $avg: "$characteristics.Size.value" },
+        averageWidth: { $avg: "$characteristics.Width.value" },
+        averageFit: { $avg: "$characteristics.Fit.value" },
+        averageLength: { $avg: "$characteristics.Length.value" },
+        averageComfort: { $avg: "$characteristics.Comfort.value" },
+        averageQuality: { $avg: "$characteristics.Quality.value" },
       }
     },
 
     {
-      $group: {
-        _id: "$_id.product_id",
-        recommendations: {
-          $push: {
-            k: {$convert: {input: "$_id.recommend", to: "string"}},
-            v: {$convert: {input: "$count", to: "string"}}
-          }
-        }
-
-      }
-    },
-
-    {
-      $project: {
-        _id: 1,
-        ratings: { $arrayToObject: "$recommendations" }
-      }
-    },
-
-    {
-      $out: "reviews_meta_recommendations"
+      $out: "reviews_meta_characteristics"
     }
   ]
 );
