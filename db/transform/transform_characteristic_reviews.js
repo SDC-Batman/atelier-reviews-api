@@ -31,7 +31,7 @@
     { $project: { characteristics: 0 } },
 
     {
-      $out: "characteristic_reviews_transformed_test"
+      $out: "characteristic_reviews_transformed"
     }
   ]);
 
@@ -106,3 +106,6 @@ db.characteristic_reviews_transformed.aggregate(
     }
   ]
 );
+
+// add index for product_id
+db.characteristic_reviews_transformed.createIndex( { product_id: 1} );
