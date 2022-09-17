@@ -1,39 +1,88 @@
- // merge characteristics with characteristics reviews
- // TO-DO:
- // - more efficient join with indexes on each
- // - join on both product_id and characteristic_id
- // - benchmarking: time to complete!
+// add indexes for characteristics and characteristic reviews for efficient merging in subsequent steps
 
- db.characteristic_reviews_test.aggregate(
+db.characteristic_reviews_transformed.drop();
+db.characteristics_transformed.drop();
+
+// db.characteristic_reviews_transformed.getIndexes()
+// db.characteristics_transformed.getIndexes()
+
+db.characteristic_reviews.aggregate(
+  [
+    {
+      $project: {
+        _id: "$id",
+        characteristic_id: 1,
+        review_id: 1,
+        value: 1
+      }
+    },
+
+    {
+      $out: "characteristic_reviews_transformed"
+    }
+  ]
+);
+db.characteristic_reviews_transformed.createIndex( { characteristic_id: 1} );
+db.characteristic_reviews_transformed.getIndexes();
+
+db.characteristics.aggregate(
+  [
+    {
+      $project: {
+        _id: "$id",
+        product_id: 1,
+        name: 1
+      }
+    },
+
+    {
+      $out: "characteristics_transformed"
+    }
+  ]
+);
+
+
+// merge characteristics with characteristics reviews
+db.characteristic_reviews_transformed.aggregate(
   [
     {
       $lookup:
       {
-        from: "characteristics_test",
+        from: "characteristics_transformed",
         localField: "characteristic_id",
-        foreignField: "id",
+        foreignField: "_id",
         as: "characteristics"
       }
     },
 
     {
-      $replaceRoot:
-      { newRoot:
-        {
-          $mergeObjects: [ {
-            $arrayElemAt: [ "$characteristics", 0 ] },
-            "$$ROOT"
-          ]
-        }
+      $out: "characteristic_reviews_transformed"
+    }
+  ]);
+
+
+// unwind characteristics array and select fields with project operator
+db.characteristic_reviews_transformed.aggregate(
+  [
+    {$unwind: '$characteristics'},
+
+    {
+      $project: {
+        _id: 1,
+        review_id: 1,
+        product_id: "$characteristics.product_id",
+        characteristic_id: 1,
+        name: "$characteristics.name",
+        value: 1
       }
     },
 
-    { $project: { characteristics: 0 } },
-
     {
-      $out: "characteristic_reviews_transformed_test"
+      $out: "characteristic_reviews_transformed"
     }
   ]);
+
+
 
 // add characteristics field
 db.characteristic_reviews_transformed.aggregate(
@@ -42,7 +91,7 @@ db.characteristic_reviews_transformed.aggregate(
       $addFields:
         {"characteristic":
           {
-              id: "$id",
+              id: "$_id",
               value: "$value"
           }
         }
@@ -62,7 +111,6 @@ db.characteristic_reviews_transformed.aggregate(
       $group:
         {
           _id: {review_id: "$review_id", product_id: "$product_id"},
-          // product_id: "$product_id"
           names: {
             $push: "$name"
           },
@@ -106,3 +154,12 @@ db.characteristic_reviews_transformed.aggregate(
     }
   ]
 );
+
+// add index for product_id
+db.characteristic_reviews_transformed.createIndex( { product_id: 1} );
+
+// test
+// check size of dataset == # of distinct review_id
+db.characteristic_reviews.find().size();
+db.characteristic_reviews_transformed.find().size();
+// db.characteristic_reviews_transformed.distinct("_id").length;
