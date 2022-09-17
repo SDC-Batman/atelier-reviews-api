@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/SDC-Batman/atelier-reviews-api#readme",
   "dependencies": {
+    "csv": "^6.2.0",
     "csv-parse": "^5.3.0",
+    "csvtojson": "^2.0.10",
     "fast-csv": "^4.3.6",
     "mongoose": "^6.6.0"
   }

@@ -21,11 +21,15 @@
 - [ ] Import test CSV data into MongoDB from command line.
 
   ```
+  mongoimport -d reviews --collection="reviews_test" --type=json --jsonArray --file=reviews_test_handmade.json
+  ```
+
+  ```
   mongoimport -d reviews --collection="reviews_photos_test" --type=csv --headerline --file=reviews_photos_test.csv
   ```
 
   ```
-  mongoimport -d reviews --collection="characteristic_reviews_test" --type=csv --headerline --file=characteristic_reviews_test.csv
+  mongoimport -d reviews --collection="characteristic_reviews_test" --type=csv --headerline --columnsHaveTypes --fieldFile=reviews_field_file_with_types.txt --file=characteristic_reviews_test.csv
   ```
 
   ```
