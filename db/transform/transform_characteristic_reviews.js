@@ -6,7 +6,7 @@ db.characteristics_transformed.drop();
 // db.characteristic_reviews_transformed.getIndexes()
 // db.characteristics_transformed.getIndexes()
 
-db.characteristic_reviews_test.aggregate(
+db.characteristic_reviews.aggregate(
   [
     {
       $project: {
@@ -22,8 +22,10 @@ db.characteristic_reviews_test.aggregate(
     }
   ]
 );
+db.characteristic_reviews_transformed.createIndex( { characteristic_id: 1} );
+db.characteristic_reviews_transformed.getIndexes();
 
-db.characteristics_test.aggregate(
+db.characteristics.aggregate(
   [
     {
       $project: {
@@ -53,23 +55,34 @@ db.characteristic_reviews_transformed.aggregate(
       }
     },
 
-    // {$unwind: '$characteristics'},
+    {
+      $out: "characteristic_reviews_transformed"
+    }
+  ]);
 
-    // {
-    //   $project: {
-    //     _id: 1,
-    //     review_id: 1,
-    //     product_id: "$characteristics.product_id",
-    //     characteristic_id: 1,
-    //     name: "$characteristics.name",
-    //     value: 1
-    //   }
-    // },
+
+// unwind characteristics array and select fields with project operator
+db.characteristic_reviews_transformed.aggregate(
+  [
+    {$unwind: '$characteristics'},
+
+    {
+      $project: {
+        _id: 1,
+        review_id: 1,
+        product_id: "$characteristics.product_id",
+        characteristic_id: 1,
+        name: "$characteristics.name",
+        value: 1
+      }
+    },
 
     {
       $out: "characteristic_reviews_transformed"
     }
   ]);
+
+
 
 // add characteristics field
 db.characteristic_reviews_transformed.aggregate(
@@ -98,7 +111,6 @@ db.characteristic_reviews_transformed.aggregate(
       $group:
         {
           _id: {review_id: "$review_id", product_id: "$product_id"},
-          // product_id: "$product_id"
           names: {
             $push: "$name"
           },
@@ -148,5 +160,6 @@ db.characteristic_reviews_transformed.createIndex( { product_id: 1} );
 
 // test
 // check size of dataset == # of distinct review_id
+db.characteristic_reviews.find().size();
 db.characteristic_reviews_transformed.find().size();
-db.characteristic_reviews_transformed.distinct("_id").length;
+// db.characteristic_reviews_transformed.distinct("_id").length;
