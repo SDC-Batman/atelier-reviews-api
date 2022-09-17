@@ -141,6 +141,10 @@ db.characteristic_reviews_transformed.aggregate(
     },
 
     {
+
+    },
+
+    {
       $out: "reviews_meta_characteristics"
     }
   ]
