@@ -1,10 +1,5 @@
  // merge characteristics with characteristics reviews
- // TO-DO:
- // - more efficient join with indexes on each
- // - join on both product_id and characteristic_id
- // - benchmarking: time to complete!
-
- db.characteristic_reviews_test.aggregate(
+  db.characteristic_reviews.aggregate(
   [
     {
       $lookup:
