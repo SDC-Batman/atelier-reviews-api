@@ -33,7 +33,7 @@ const path = require('path');
 const csv = require('fast-csv');
 
 const inputFile = path.resolve(__dirname, '../../data/test/', 'reviews.csv')
-const outputFile = path.resolve(__dirname, '../../data/test/', 'reviews_transformed.csv')
+const outputFile = path.resolve(__dirname, '../../data/test/', 'reviews_transformed.json')
 
 const readStream = fs.createReadStream(inputFile);
 const writeStream = fs.createWriteStream(outputFile);
