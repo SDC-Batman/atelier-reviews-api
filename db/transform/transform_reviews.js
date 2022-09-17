@@ -10,11 +10,29 @@ db.reviews.aggregate(
          date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
          summary: 1,
          body: 1,
-         recommend: {$toBool: "$recommend"},
-         reported: {$toBool: "$reported"},
+        recommend: {
+          $cond: {
+            if: { $eq: ["$recommend", "true"]},
+            then: true,
+            else: false
+          }
+        },
+        reported: {
+          $cond: {
+            if: { $eq: ["$reported", "true"]},
+            then: true,
+            else: false
+          }
+        },
          reviewer_name: 1,
          reviewer_email: 1,
-         response: 1,
+         response: {
+          $cond: {
+            if: { $eq: ["$response", "null"]},
+            then: null,
+            else: "$response"
+          }
+        },
          helpfulness: 1
       }
     },
