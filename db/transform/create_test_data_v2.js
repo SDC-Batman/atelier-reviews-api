@@ -3,7 +3,7 @@ const csv = require('csvtojson');
 const fs = require('fs');
 
 const inputFilePath = path.resolve(__dirname, '../../data/test/', 'reviews_transformed.csv');
-const outputFilePath = path.resolve(__dirname, '../../data/test/', 'reviews_2500000.json');
+const outputFilePath = path.resolve(__dirname, '../../data/test/', 'reviews_test.json');
 
 csv({
     colParser: {
