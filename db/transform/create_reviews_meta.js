@@ -100,7 +100,15 @@ db.reviews_meta_ratings.aggregate(
       $project: {
         _id: 1,
         ratings: 1,
-        recommendations: {{ $arrayElemAt: [ "$recommendations", 0 ] }
+        recommendations: { $arrayElemAt: [ "$recommendations", 0 ] }
+      }
+    },
+
+    {
+      $project: {
+        _id: 1,
+        ratings: 1,
+        recommendations: "$recommendations.recommendations"
       }
     },
 
