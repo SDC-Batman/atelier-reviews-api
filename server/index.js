@@ -1,27 +1,28 @@
-// const express = require('express');
-// const bodyParser = require('body-parser')
-// const mongoose = require('mongoose');
-import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+// import express from 'express';
+// import bodyParser from 'body-parser';
+// import mongoose from 'mongoose';
 
 // Serve app
 const app = express();
-const port = 3000
+const port = 3000;
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/reviews');
 
 // Import Models
-import { Reviews } from './models/Reviews.js'
+// import { Reviews } from './models/Reviews.js'
+const Reviews = require('.models/Reviews.js');
 
 // middleware
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/reviews', (req, res) => {
-  Reviews.find({_id: req.query.product_id})
+  Reviews.find({ _id: req.query.product_id })
     .then((response) => {
       res.json(response);
     })

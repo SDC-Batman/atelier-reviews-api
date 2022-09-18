@@ -46,5 +46,6 @@ const Reviews = mongoose.model('Reviews', reviewsSchema);
 //   return Reviews.find({_id: req.query.product_id});
 // }
 
+module.exports = { Reviews };
 // module.exports = { getReviews };
-export { Reviews };
+// export { Reviews };
