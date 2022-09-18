@@ -1,6 +1,7 @@
 {
   "name": "atelier-reviews-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "Atlelier Reviews API",
   "main": "index.js",
   "scripts": {
