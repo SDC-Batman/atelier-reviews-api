@@ -1,11 +1,11 @@
 {
   "name": "atelier-reviews-api",
   "version": "1.0.0",
-  "type": "module",
   "description": "Atlelier Reviews API",
   "main": "index.js",
   "scripts": {
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -18,11 +18,20 @@
   },
   "homepage": "https://github.com/SDC-Batman/atelier-reviews-api#readme",
   "dependencies": {
+    "body-parser": "^1.20.0",
     "csv": "^6.2.0",
     "csv-parse": "^5.3.0",
     "csvtojson": "^2.0.10",
     "express": "^4.18.1",
     "fast-csv": "^4.3.6",
     "mongoose": "^6.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.31.8",
+    "eslint-plugin-react-hooks": "^4.6.0"
   }
 }
