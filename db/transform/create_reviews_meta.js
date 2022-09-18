@@ -119,80 +119,19 @@ db.reviews_meta_ratings.aggregate(
 
 
 
-// aggregate characteristics
-// db.characteristic_reviews_transformed.aggregate(
-//   [
-
-//     {
-//       $group: {
-//         _id: {
-//           product_id: "$product_id",
-//           recommend: "$recommend"
-//         },
-//         count: {
-//           "$sum": 1
-//         }
-//       }
-//     },
-
-//     {
-//       $group: {
-//         _id: "$_id.product_id",
-//         recommendations: {
-//           $push: {
-//             k: {$convert: {input: "$_id.recommend", to: "string"}},
-//             v: {$convert: {input: "$count", to: "string"}}
-//           }
-//         }
-
-//       }
-//     },
-
-//     {
-//       $project: {
-//         _id: 1,
-//         ratings: { $arrayToObject: "$recommendations" }
-//       }
-//     },
-
-//     {
-//       $out: "reviews_meta_characteristics"
-//     }
-//   ]
-// );
-
-// create test data for a specific product
+// get ids and averages for characteristics by product
 db.characteristic_reviews_transformed.aggregate(
-  [
-    {
-      $project: {
-        _id: 1,
-        product_id: 1,
-        characteristics: 1
-      }
-
-    },
-
-    {
-      $match: {
-        product_id: 4
-      }
-
-    },
-
-    {
-      $out: "characteristics_reviews_transformed_product"
-    }
-  ]
-);
-
-
-db.characteristics_reviews_transformed_product.aggregate(
   [
     {
       $group: {
         _id: "$product_id",
         numReviews: { $count: {}},
+        idSize: {$first: "$characteristics.Size.id"},
+        idWidth: {$first: "$characteristics.Width.id"},
+        idFit: {$first: "$characteristics.Fit.id"},
+        idLength: {$first: "$characteristics.Length.id"},
+        idComfort: {$first: "$characteristics.Comfort.id"},
+        idQuality: {$first: "$characteristics.Quality.id"},
         averageSize: { $avg: "$characteristics.Size.value" },
         averageWidth: { $avg: "$characteristics.Width.value" },
         averageFit: { $avg: "$characteristics.Fit.value" },
@@ -204,62 +143,72 @@ db.characteristics_reviews_transformed_product.aggregate(
     },
 
     {
+      $out: "reviews_meta_characteristics"
+    }
+  ]
+);
+
+db.reviews_meta_characteristics.aggregate(
+  [
+    {
       $project: {
         _id: 1,
         numReviews: 1,
-        averageSize: {
-          $cond: {
-            if: {
-              $ne: ['$averageSize', null],
+        characteristics: {
+          Size: {
+            $cond: {
+              if: {
+                $ne: ['$averageSize', null],
+              },
+              then: {id: "$idSize", value: '$averageSize'},
+              else: '$$REMOVE',
             },
-            then: '$averageSize',
-            else: '$$REMOVE',
           },
-        },
-        averageWidth: {
-          $cond: {
-            if: {
-              $ne: ['$averageWidth', null],
+          Width: {
+            $cond: {
+              if: {
+                $ne: ['$averageWidth', null],
+              },
+              then: {id: "$idWidth", value: '$averageWidth'},
+              else: '$$REMOVE',
             },
-            then: '$averageWidth',
-            else: '$$REMOVE',
           },
-        },
-        averageFit: {
-          $cond: {
-            if: {
-              $ne: ['$averageFit', null],
+          Fit: {
+            $cond: {
+              if: {
+                $ne: ['$averageFit', null],
+              },
+              then: {id: "$idFit", value: '$averageFit'},
+              else: '$$REMOVE',
             },
-            then: '$averageFit',
-            else: '$$REMOVE',
           },
-        },
-        averageLength: {
-          $cond: {
-            if: {
-              $ne: ['$averageLength', null],
+          Length: {
+            $cond: {
+              if: {
+                $ne: ['$averageLength', null],
+              },
+              then: {id: "$idLength", value: '$averageLength'},
+              else: '$$REMOVE',
             },
-            then: '$averageLength',
-            else: '$$REMOVE',
           },
-        },
-        averageComfort: {
-          $cond: {
-            if: {
-              $ne: ['$averageComfort', null],
+          Comfort: {
+            $cond: {
+              if: {
+                $ne: ['$averageComfort', null],
+              },
+              then: {id: "$idComfort", value: '$averageComfort'},
+              else: '$$REMOVE',
             },
-            then: '$averageComfort',
-            else: '$$REMOVE',
           },
-        },
-        averageQuality: {
-          $cond: {
-            if: {
-              $ne: ['$averageQuality', null],
+          Quality: {
+            $cond: {
+              if: {
+                $ne: ['$averageQuality', null],
+              },
+              then: {id: "$idQuality", value: '$averageQuality'},
+              else: '$$REMOVE',
             },
-            then: '$averageQuality',
-            else: '$$REMOVE',
-          },
+          }
         }
 
       }
@@ -271,30 +220,38 @@ db.characteristics_reviews_transformed_product.aggregate(
   ]
 );
 
+// merge characteristics with meta data
+db.reviews_meta.aggregate(
+  [
+    {
+      $lookup:
+      {
+        from: "reviews_meta_characteristics",
+        localField: "_id",
+        foreignField: "_id",
+        as: "characteristics"
+      }
+    },
 
-    // {
-    //   $project: {
-    //     _id: 1,
-    //     numReviews: 1,
-    //     characteristics: {
-    //       Size: {
-    //         value: "$averageSize"
-    //       },
-    //       Width: {
-    //         value: "$averageWidth"
-    //       },
-    //       Fit: {
-    //         value: "$averageFit"
-    //       },
-    //       Length: {
-    //         value: "$averageLength"
-    //       },
-    //       Comfort: {
-    //         value: "$averageComfort"
-    //       },
-    //       Quality: {
-    //         value: "$averageQuality"
-    //       }
-    //     }
-    //   }
-    // },
+    {
+      $project: {
+        _id: 1,
+        ratings: 1,
+        recommendations: 1,
+        characteristics: { $arrayElemAt: [ "$characteristics", 0 ] }
+      }
+    },
+
+    {
+      $project: {
+        _id: 1,
+        ratings: 1,
+        recommendations: 1,
+        characteristics: "$characteristics.characteristics"
+      }
+    },
+
+    {
+      $out: "reviews_meta"
+    }
+  ]);
