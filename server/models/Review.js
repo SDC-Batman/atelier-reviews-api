@@ -8,6 +8,7 @@ mongoose.connect('mongodb://localhost:27017/' + process.env.DB_NAME);
 const reviewSchema = new mongoose.Schema(
   {
     _id: Number,
+    review_id: Number,
     product_id: Number,
     rating: Number,
     summary: String,
@@ -75,16 +76,24 @@ let addNewReview = (bodyParams) => {
   bodyParams['reported'] = false;
   bodyParams['response'] = null;
 
-  // delete extraneous columns
+  // delete extraneous fields
   delete bodyParams.name;
   delete bodyParams.email;
 
-  // create new Review object for save
-  const newReview = new Review(bodyParams);
-  console.log(newReview);
+  // get total number of reviews to construct new review_id
+  return Review.find({}).count()
+    .then((review_count) => {
+      const review_id = review_count + 1;
+      bodyParams['review_id'] = review_id;
+      bodyParams['_id'] = review_id;
 
-  // save the new Review and return response
-  return newReview.save();
+      // save new review into database
+      const newReview = new Review(bodyParams);
+      return newReview.save();
+    })
+    .catch((error) => {
+      return error;
+    })
 
 }
 
