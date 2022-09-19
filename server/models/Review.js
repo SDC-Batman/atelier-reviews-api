@@ -32,14 +32,14 @@ const Review = mongoose.model('Review', reviewSchema);
 // Create Database functions
 let getReviews = (queryParams) => {
   const { product_id, count, page, sort } = queryParams;
-  return Reviews.find({product_id: product_id});
+  return Review.find({product_id: product_id});
 }
 
 let markHelpful = (review_id) => {
-  return Reviews.findById({_id: review_id})
+  return Review.findById({_id: review_id})
     .then((review) => {
       const helpfulness = { 'helpfulness': review.helpfulness + 1 };
-      return Reviews.findOneAndUpdate({_id: review_id}, helpfulness);
+      return Review.findOneAndUpdate({_id: review_id}, helpfulness);
     })
     .catch((error) => {
       console.log(error)
@@ -47,10 +47,10 @@ let markHelpful = (review_id) => {
 }
 
 let report = (review_id) => {
-  return Reviews.findById({_id: review_id})
+  return Review.findById({_id: review_id})
     .then((review) => {
       const report = { 'reported': review.reported === false ? true : false };
-      return Reviews.findOneAndUpdate({_id: review_id}, report);
+      return Review.findOneAndUpdate({_id: review_id}, report);
     })
     .catch((error) => {
       console.log(error)

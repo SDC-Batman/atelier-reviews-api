@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 // Import models
-const Review = require('./models/Reviews.js');
-const ReviewsMeta = require('./models/ReviewsMeta.js');
+const Review = require('./models/Review.js');
+const ReviewMeta = require('./models/ReviewMeta.js');
 // import express from 'express';
 // import bodyParser from 'body-parser';
 // import mongoose from 'mongoose';
@@ -30,7 +31,7 @@ app.get('/reviews', (req, res) => {
 
 // Get reviews metadata for a given product_id
 app.get('/reviews/meta', (req, res) => {
-  ReviewsMeta.getReviewsMeta(req.query)
+  ReviewMeta.getReviewMeta(req.query)
     .then((response) => {
       res.json(response);
     })
