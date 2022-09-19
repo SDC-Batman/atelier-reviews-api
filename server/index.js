@@ -18,10 +18,22 @@ app.use(bodyParser.json());
 
 // Get all reviews for a given product_id
 app.get('/reviews', (req, res) => {
-  // Reviews.find({ _id: req.query.product_id })
   Reviews.getReviews(req.query)
     .then((response) => {
       res.json(response);
+    })
+    .catch((error) => {
+      res.sendStatus(400);
+    });
+})
+
+
+// Get all reviews for a given product_id
+app.put('/reviews/:review_id/helpful', (req, res) => {
+  const review_id = req.params.review_id;
+  Reviews.markHelpful(review_id)
+    .then((response) => {
+      res.sendStatus(201);
     })
     .catch((error) => {
       res.sendStatus(400);

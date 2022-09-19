@@ -2,23 +2,11 @@
 const mongoose = require('mongoose');
 // import mongoose from 'mongoose';
 
-
 // // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/reviews');
 
-// const photosSchema = new mongoose.Schema({
-//   _id: Number,
-//   photos: [{ id: Number, url: String }]
-// }, {collection: 'reviews_photos_transformed'});
 
-// // Create Reviews Model
-// const ReviewPhotosModel = mongoose.model('ReviewPhotos', photosSchema);
-
-// // Query Reviews
-// ReviewPhotosModel.find({_id: 5});
-
-
-
+// Create Reviews Schema and Model
 const reviewsSchema = new mongoose.Schema(
   {
     _id: Number,
@@ -38,15 +26,29 @@ const reviewsSchema = new mongoose.Schema(
   {collection: 'reviews_transformed'}
 );
 
-// Create Reviews Model
+
 const Reviews = mongoose.model('Reviews', reviewsSchema);
 
+// Create Database functions
 let getReviews = (queryParams) => {
   const { product_id, count, page, sort } = queryParams;
-  // return Reviews.find({_id: req.query.product_id});
-  return Reviews.find({_id: product_id});
+  return Reviews.find({product_id: product_id});
 }
 
-// module.exports = { Reviews };
-module.exports = { getReviews };
-// export { Reviews };
+let markHelpful = (review_id) => {
+  return Reviews.findById({_id: review_id})
+    .then((review) => {
+      const helpfulness = { 'helpfulness': review.helpfulness + 1 };
+      return Reviews.findOneAndUpdate({_id: review_id}, helpfulness);
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+let report = (queryParams) => {
+  const { review_id } = queryParams;
+  return Reviews.updateOne({_id: review_id});
+}
+
+module.exports = { getReviews, markHelpful, report };
