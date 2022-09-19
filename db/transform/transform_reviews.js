@@ -12,6 +12,7 @@ db.reviews.aggregate(
   [
     {
       $project: {
+        _id: "$id",
         review_id: "$id",
         product_id: 1,
         rating: 1,
@@ -62,7 +63,7 @@ db.reviews_transformed.aggregate(
       $lookup:
       {
         from: "reviews_photos_transformed",
-        localField: "review_id",
+        localField: "_id",
         foreignField: "_id",
         as: "photos"
       }
