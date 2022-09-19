@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 // Import models
 const Reviews = require('./models/Reviews.js');
+const ReviewsMeta = require('./models/ReviewsMeta.js');
 // import express from 'express';
 // import bodyParser from 'body-parser';
 // import mongoose from 'mongoose';
@@ -27,6 +28,16 @@ app.get('/reviews', (req, res) => {
     });
 })
 
+// Get reviews metadata for a given product_id
+app.get('/reviews/meta', (req, res) => {
+  ReviewsMeta.getReviewsMeta(req.query)
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((error) => {
+      res.sendStatus(400);
+    });
+})
 
 // mark a review as helpful
 app.put('/reviews/:review_id/helpful', (req, res) => {
