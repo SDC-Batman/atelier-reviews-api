@@ -81,9 +81,10 @@ let addNewReview = (bodyParams) => {
   delete bodyParams.email;
 
   // get total number of reviews to construct new review_id
-  return Review.find({}).count()
-    .then((review_count) => {
-      const review_id = review_count + 1;
+  return Review.find({}).sort({review_id: -1}).limit(1)
+    .then((review) => {
+      const review_id = Number(review[0]['review_id']) + 1;
+      console.log(review_id);
       bodyParams['review_id'] = review_id;
       bodyParams['_id'] = review_id;
 
