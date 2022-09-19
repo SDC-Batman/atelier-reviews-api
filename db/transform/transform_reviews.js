@@ -6,11 +6,13 @@
 
 // select fields
 // modify id, date, and response fields
+
+
 db.reviews.aggregate(
   [
     {
       $project: {
-        _id: "$id",
+        review_id: "$id",
         product_id: 1,
         rating: 1,
         date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
@@ -49,6 +51,9 @@ db.reviews.aggregate(
   ]
 );
 
+// Add indexes for review_id and product_id
+db.reviews_transformed.createIndex( { review_id: 1} );
+db.reviews_transformed.createIndex( { product_id: 1} );
 
 // join with reviews_photos_transformed to add photos
 db.reviews_transformed.aggregate(
@@ -57,7 +62,7 @@ db.reviews_transformed.aggregate(
       $lookup:
       {
         from: "reviews_photos_transformed",
-        localField: "_id",
+        localField: "review_id",
         foreignField: "_id",
         as: "photos"
       }
@@ -80,6 +85,3 @@ db.reviews_transformed.aggregate(
     }
   ]);
 
-
-// add index for product_id
-db.reviews_transformed.createIndex( { product_id: 1} );

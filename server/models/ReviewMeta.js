@@ -34,7 +34,7 @@ const ReviewMeta = mongoose.model('ReviewMeta', metaSchema);
 // Create Database functions
 let getReviewMeta = (queryParams) => {
   const { product_id } = queryParams;
-  return ReviewMeta.find({_id: product_id});
+  return ReviewMeta.find({_id: product_id}).select({_id: 0});
 }
 
 module.exports = { getReviewMeta };

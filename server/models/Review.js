@@ -32,14 +32,14 @@ let getReviews = (queryParams) => {
   const { product_id, sort } = queryParams;
 
   if (sort === 'helpful') {
-    return Review.find({product_id: product_id}).sort({helpfulness: -1});
+    return Review.find({product_id: product_id}).sort({helpfulness: -1}).select({_id: 0});
 
   } else if (sort === 'newest') {
-    return Review.find({product_id: product_id}).sort({date: -1});
+    return Review.find({product_id: product_id}).sort({date: -1}).select({_id: 0});
   }
   // default sort is relevance
   else {
-    return Review.find({product_id: product_id}).sort({helpfulness: -1, date: -1});
+    return Review.find({product_id: product_id}).sort({helpfulness: -1, date: -1}).select({_id: 0});
   }
 
 }
