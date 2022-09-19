@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/' + process.env.DB_NAME);
 
-// Create Reviews Schema and Model
+// Create Reviews Schema
 const reviewSchema = new mongoose.Schema(
   {
     _id: Number,
@@ -25,8 +25,20 @@ const reviewSchema = new mongoose.Schema(
   {collection: 'reviews_transformed'}
 );
 
+// Create Review Photos Schema
+const photoSchema = new mongoose.Schema(
+  {
+    _id: Number,
+    id: Number,
+    review_id: Number,
+    url: String
+  },
+  {collection: 'reviews_photos'}
+);
 
+// Create models
 const Review = mongoose.model('Review', reviewSchema);
+const ReviewPhoto = mongoose.model('ReviewPhoto', photoSchema);
 
 // Create Database functions
 let getReviews = (queryParams) => {
@@ -83,19 +95,43 @@ let addNewReview = (bodyParams) => {
   // get total number of reviews to construct new review_id
   return Review.find({}).sort({review_id: -1}).limit(1)
     .then((review) => {
-
       // create new review_id
       const review_id = Number(review[0]['review_id']) + 1;
       bodyParams['review_id'] = review_id;
       bodyParams['_id'] = review_id;
 
+      return ReviewPhoto.find({}).sort({id: -1}).limit(1)
+    })
+    .then((reviewPhoto) => {
+      // create new review photos ids
+      let review_photo_id = reviewPhoto[0]['id'];
+      const photos = bodyParams.photos.map((photo, index) => {
+        const new_review_photo_id = review_photo_id + index + 1;
+        return new ReviewPhoto({
+            _id: new_review_photo_id,
+            id: new_review_photo_id,
+            review_id: bodyParams['review_id'],
+            url: photo
+          });
+      });
+      bodyParams['photos'] = photos.map((photo) => {
+        return {
+          id: photo._id,
+          url: photo.url
+        };
+      });
+      console.log(bodyParams);
+      // save photos into the database
+      return ReviewPhoto.insertMany(photos)
+    })
+    .then(() => {
       // save new review into database
       const newReview = new Review(bodyParams);
       return newReview.save();
     })
     .catch((error) => {
       return error;
-    })
+    });
 
 }
 
