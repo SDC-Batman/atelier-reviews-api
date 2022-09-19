@@ -29,8 +29,19 @@ const Review = mongoose.model('Review', reviewSchema);
 
 // Create Database functions
 let getReviews = (queryParams) => {
-  const { product_id, count, page, sort } = queryParams;
-  return Review.find({product_id: product_id});
+  const { product_id, sort } = queryParams;
+
+  if (sort === 'helpful') {
+    return Review.find({product_id: product_id}).sort({helpfulness: -1});
+
+  } else if (sort === 'newest') {
+    return Review.find({product_id: product_id}).sort({date: -1});
+  }
+  // default sort is relevance
+  else {
+    return Review.find({product_id: product_id}).sort({helpfulness: -1, date: -1});
+  }
+
 }
 
 let markHelpful = (review_id) => {
