@@ -1,10 +1,8 @@
-// // Load mongoose library
+// Load mongoose library
 const mongoose = require('mongoose');
-// import mongoose from 'mongoose';
 
-// // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/reviews');
-
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/' + process.env.DB_NAME);
 
 // Create Reviews Schema and Model
 const reviewSchema = new mongoose.Schema(

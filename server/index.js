@@ -12,7 +12,7 @@ const ReviewMeta = require('./models/ReviewMeta.js');
 
 // Serve app
 const app = express();
-const port = 3000;
+const port = process.env.PORT | 3000;
 
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
