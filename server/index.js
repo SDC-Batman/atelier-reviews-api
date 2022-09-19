@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 // Import models
-const Reviews = require('./models/Reviews.js');
+const Review = require('./models/Reviews.js');
 const ReviewsMeta = require('./models/ReviewsMeta.js');
 // import express from 'express';
 // import bodyParser from 'body-parser';
@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 // Get all reviews for a given product_id
 app.get('/reviews', (req, res) => {
-  Reviews.getReviews(req.query)
+  Review.getReviews(req.query)
     .then((response) => {
       res.json(response);
     })
@@ -42,7 +42,7 @@ app.get('/reviews/meta', (req, res) => {
 // mark a review as helpful
 app.put('/reviews/:review_id/helpful', (req, res) => {
   const review_id = req.params.review_id;
-  Reviews.markHelpful(review_id)
+  Review.markHelpful(review_id)
     .then((response) => {
       res.sendStatus(201);
     })
@@ -54,11 +54,24 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
 // report a review
 app.put('/reviews/:review_id/report', (req, res) => {
   const review_id = req.params.review_id;
-  Reviews.report(review_id)
+  Review.report(review_id)
     .then((response) => {
       res.sendStatus(201);
     })
     .catch((error) => {
+      res.sendStatus(400);
+    });
+})
+
+// add a new review
+app.post('/reviews', (req, res) => {
+  Review.addNewReview(req.body)
+    .then((response) => {
+      console.log(response);
+      res.sendStatus(201);
+    })
+    .catch((error) => {
+      console.log(error);
       res.sendStatus(400);
     });
 })
