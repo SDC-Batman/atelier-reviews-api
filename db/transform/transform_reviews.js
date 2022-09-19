@@ -1,15 +1,21 @@
+// require('dotenv').config();
+// console.log(process.env);
+
+// // Open MongoDB shell
+// mongosh "mongodb://localhost:27017" + DB_NAME
+
 // select fields
 // modify id, date, and response fields
 db.reviews.aggregate(
   [
     {
       $project: {
-         _id: "$id",
-         product_id: 1,
-         rating: 1,
-         date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
-         summary: 1,
-         body: 1,
+        _id: "$id",
+        product_id: 1,
+        rating: 1,
+        date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
+        summary: 1,
+        body: 1,
         recommend: {
           $cond: {
             if: { $eq: ["$recommend", "true"]},
@@ -54,6 +60,18 @@ db.reviews_transformed.aggregate(
         localField: "_id",
         foreignField: "_id",
         as: "photos"
+      }
+    },
+
+    {
+      $addFields: {
+        photos: { $arrayElemAt: [ "$photos", 0 ] }
+      }
+    },
+
+    {
+      $addFields: {
+        photos: "$photos.photos"
       }
     },
 
