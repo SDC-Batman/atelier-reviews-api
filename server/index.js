@@ -28,10 +28,22 @@ app.get('/reviews', (req, res) => {
 })
 
 
-// Get all reviews for a given product_id
+// mark a review as helpful
 app.put('/reviews/:review_id/helpful', (req, res) => {
   const review_id = req.params.review_id;
   Reviews.markHelpful(review_id)
+    .then((response) => {
+      res.sendStatus(201);
+    })
+    .catch((error) => {
+      res.sendStatus(400);
+    });
+})
+
+// report a review
+app.put('/reviews/:review_id/report', (req, res) => {
+  const review_id = req.params.review_id;
+  Reviews.report(review_id)
     .then((response) => {
       res.sendStatus(201);
     })

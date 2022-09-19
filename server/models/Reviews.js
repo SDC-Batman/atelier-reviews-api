@@ -46,9 +46,15 @@ let markHelpful = (review_id) => {
     })
 }
 
-let report = (queryParams) => {
-  const { review_id } = queryParams;
-  return Reviews.updateOne({_id: review_id});
+let report = (review_id) => {
+  return Reviews.findById({_id: review_id})
+    .then((review) => {
+      const report = { 'reported': review.reported === false ? true : false };
+      return Reviews.findOneAndUpdate({_id: review_id}, report);
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 }
 
 module.exports = { getReviews, markHelpful, report };
