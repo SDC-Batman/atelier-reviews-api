@@ -182,11 +182,15 @@ let addNewReview = (bodyParams) => {
       return ReviewMeta.getReviewMeta({product_id: product_id})
         .then((reviewMetadata) => {
           // Update ratings and recommendations
-          console.log("Old Metadata:");
+          // console.log("Old Metadata:");
           let result = reviewMetadata[0];
-          console.log(result);
+          // console.log(result);
+
           let oldRating = Number(result['ratings'][String(bodyParams.rating)]);
           let oldRecommend = Number(result['recommendations'][String(bodyParams.recommend)]);
+          oldRating = isNaN(oldRating) ? 0 : oldRating;
+          oldRecommend = isNaN(oldRecommend) ? 0 : oldRecommend;
+
           result.ratings[String(bodyParams.rating)] = String(oldRating + 1);
           result.recommendations[String(bodyParams.recommend)] = String(oldRecommend + 1);
 
@@ -204,14 +208,14 @@ let addNewReview = (bodyParams) => {
                 const newValue = ((result.characteristics[name].value * numReviews) + characteristicValue) / (numReviews + 1);
                 // console.log("New Average Value: ", newValue);
                 result.characteristics[name].value = newValue;
-                console.log(result.characteristics[name]);
+                // console.log(result.characteristics[name]);
               })
               .then(() => {
-                console.log("New Metadata:");
-                console.log(result);
+                // console.log("New Metadata:");
+                // console.log(result);
                 const newReviewMetadata = new ReviewMeta.ReviewMeta(result);
                 // return newReview.save();
-                return ReviewMeta.ReviewMeta.update({_id: product_id}, newReviewMetadata);
+                return ReviewMeta.ReviewMeta.replaceOne({_id: product_id}, newReviewMetadata);
               });
           });
         });
