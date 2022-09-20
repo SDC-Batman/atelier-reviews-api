@@ -76,11 +76,9 @@ app.put('/reviews/:review_id/report', (req, res) => {
 app.post('/reviews', (req, res) => {
   Review.addNewReview(req.body)
     .then((response) => {
-      console.log(response);
       res.sendStatus(201);
     })
     .catch((error) => {
-      console.log(error);
       res.sendStatus(400);
     });
 })

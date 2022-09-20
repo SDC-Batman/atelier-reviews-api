@@ -23,7 +23,7 @@ const reviewSchema = new mongoose.Schema(
     recommend: Boolean,
     reported: Boolean,
     response: String,
-    photos: [{ id: Number, url: String }]
+    photos: [{_id: false, id: Number, url: String }]
   },
   {collection: 'reviews_transformed'}
 );
@@ -148,9 +148,8 @@ let addNewReview = (bodyParams) => {
           url: photo.url
         };
       });
-      console.log("New Review Body Parameters: ");
-      console.log(bodyParams);
-
+      // console.log("New Review Body Parameters: ");
+      // console.log(bodyParams);
       return ReviewPhoto.insertMany(photos)
     })
 
@@ -224,8 +223,6 @@ let addNewReview = (bodyParams) => {
     // save new review into database
     .then(() => {
       delete bodyParams.characteristics;
-      // console.log("Body Params without characteristics:");
-      // console.log(bodyParams);
       const newReview = new Review(bodyParams);
       return newReview.save();
     })
