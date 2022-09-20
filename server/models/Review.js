@@ -1,6 +1,9 @@
 // Load mongoose library
 const mongoose = require('mongoose');
 
+// Import modules
+const ReviewMeta = require('./ReviewMeta.js');
+
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/' + process.env.DB_NAME);
 
@@ -36,9 +39,22 @@ const photoSchema = new mongoose.Schema(
   {collection: 'reviews_photos'}
 );
 
+
+// // Create Characteristic Reviews Schema
+// const characteristicReviewSchema = new mongoose.Schema(
+//   {
+//     _id: Number,
+//     id: Number,
+//     characteristic_id: Number,
+//     value: Number
+//   },
+//   {collection: 'characteristic_reviews'}
+// );
+
 // Create models
 const Review = mongoose.model('Review', reviewSchema);
 const ReviewPhoto = mongoose.model('ReviewPhoto', photoSchema);
+// const CharacteristicReview = mongoose.model('CharacteristicReview', characteristicReviewSchema);
 
 // Create Database functions
 let getReviews = (queryParams) => {
@@ -95,15 +111,15 @@ let addNewReview = (bodyParams) => {
   // get total number of reviews to construct new review_id
   return Review.find({}).sort({review_id: -1}).limit(1)
     .then((review) => {
-      // create new review_id
       const review_id = Number(review[0]['review_id']) + 1;
       bodyParams['review_id'] = review_id;
       bodyParams['_id'] = review_id;
 
       return ReviewPhoto.find({}).sort({id: -1}).limit(1)
     })
+
+    // save review photos into the database
     .then((reviewPhoto) => {
-      // create new review photos ids
       let review_photo_id = reviewPhoto[0]['id'];
       const photos = bodyParams.photos.map((photo, index) => {
         const new_review_photo_id = review_photo_id + index + 1;
@@ -113,22 +129,67 @@ let addNewReview = (bodyParams) => {
             review_id: bodyParams['review_id'],
             url: photo
           });
-      });
+        });
       bodyParams['photos'] = photos.map((photo) => {
         return {
           id: photo._id,
           url: photo.url
         };
       });
-      console.log(bodyParams);
-      // save photos into the database
+      // console.log("New Review Body Parameters: ");
+      // console.log(bodyParams);
+
       return ReviewPhoto.insertMany(photos)
     })
+
+    // save review characteristics object into database
+    // .then(() => {
+    //   return CharacteristicReview.find({}).sort({id: -1}).limit(1)
+    //     .then((characteristicReview) => {
+    //       let characteristic_review_id = characteristicReview[0]['id'];
+    //       const characteristicsArray = Object.keys(bodyParams.characteristics).map((characteristic_id, index) => {
+    //         let new_characteristic_review_id = characteristic_review_id + index + 1;
+    //         return {
+    //           _id: new_characteristic_review_id,
+    //           id: new_characteristic_review_id,
+    //           characteristic_id: Number(characteristic_id),
+    //           review_id: bodyParams.review_id,
+    //           value: bodyParams.characteristics[characteristic_id]
+    //         };
+    //       });
+    //       console.log("Review Characteristics");
+    //       console.log(characteristicsArray);
+    //       return CharacteristicReview.insertMany(characteristicsArray);
+    //     })
+    // })
+
+    // update reviews metadata
     .then(() => {
-      // save new review into database
+      console.log("update review metadata here!");
+      const product_id = bodyParams.product_id;
+      return ReviewMeta.getReviewMeta({product_id: product_id})
+        .then((reviewMetadata) => {
+          console.log("Old Metadata:");
+          let result = reviewMetadata[0];
+          console.log(result);
+          let oldRating = Number(result['ratings'][String(bodyParams.rating)]);
+          let oldRecommend = Number(result['recommendations'][String(bodyParams.recommend)]);
+          result.ratings[String(bodyParams.rating)] = String(oldRating + 1);
+          result.recommendations[String(bodyParams.recommend)] = String(oldRecommend + 1);
+          console.log("New Metadata:");
+          console.log(result);
+        })
+    })
+
+    // save new review into database
+    .then(() => {
+      delete bodyParams.characteristics;
+      // console.log("Body Params without characteristics:");
+      // console.log(bodyParams);
       const newReview = new Review(bodyParams);
       return newReview.save();
     })
+
     .catch((error) => {
       return error;
     });
