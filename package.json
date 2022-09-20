@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon server/index.js",
+    "load-testing": "k6 run tests/script.js",
     "lint": "eslint ."
   },
   "repository": {
