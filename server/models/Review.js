@@ -43,7 +43,6 @@ const photoSchema = new mongoose.Schema(
   },
 );
 
-
 // // Create Characteristic Reviews Schema
 // const characteristicReviewSchema = new mongoose.Schema(
 //   {
@@ -55,15 +54,16 @@ const photoSchema = new mongoose.Schema(
 //   {collection: 'characteristic_reviews'}
 // );
 
-
 // Create Characteristic Schema
 const characteristicSchema = new mongoose.Schema(
   {
     _id: Number,
     product_id: Number,
-    name: String
+    name: String,
   },
-  {collection: 'characteristics_transformed'}
+  {
+    collection: 'characteristics_transformed',
+  },
 );
 
 // Create models
@@ -112,13 +112,12 @@ let report = (review_id) => {
 }
 
 let addNewReview = (bodyParams) => {
-
   // add new fields to bodyParams object
-  bodyParams['reviewer_name'] = bodyParams.name;
-  bodyParams['reviewer_email'] = bodyParams.email;
-  bodyParams['helpfulness'] = 0;
-  bodyParams['reported'] = false;
-  bodyParams['response'] = null;
+  bodyParams.reviewer_name = bodyParams.name;
+  bodyParams.reviewer_email = bodyParams.email;
+  bodyParams.helpfulness = 0;
+  bodyParams.reported = false;
+  bodyParams.response = null;
 
   // delete extraneous fields
   delete bodyParams.name;
