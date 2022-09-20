@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
 // Import models
 const Review = require('./models/Review.js');
@@ -20,7 +20,6 @@ app.use(bodyParser.json());
 
 // Get all reviews for a given product_id
 app.get('/reviews', (req, res) => {
-
   // get query params and set defaults
   const queryParams = req.query;
   queryParams.count = queryParams.count !== undefined ? queryParams.count : 5;
@@ -35,7 +34,7 @@ app.get('/reviews', (req, res) => {
     .catch((error) => {
       res.sendStatus(400);
     });
-})
+});
 
 // Get reviews metadata for a given product_id
 app.get('/reviews/meta', (req, res) => {
@@ -46,11 +45,11 @@ app.get('/reviews/meta', (req, res) => {
     .catch((error) => {
       res.sendStatus(400);
     });
-})
+});
 
 // mark a review as helpful
 app.put('/reviews/:review_id/helpful', (req, res) => {
-  const review_id = req.params.review_id;
+  const { review_id } = req.params;
   Review.markHelpful(review_id)
     .then((response) => {
       res.sendStatus(201);
@@ -58,7 +57,7 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
     .catch((error) => {
       res.sendStatus(400);
     });
-})
+});
 
 // report a review
 app.put('/reviews/:review_id/report', (req, res) => {
@@ -70,7 +69,7 @@ app.put('/reviews/:review_id/report', (req, res) => {
     .catch((error) => {
       res.sendStatus(400);
     });
-})
+});
 
 // add a new review
 app.post('/reviews', (req, res) => {
@@ -81,8 +80,8 @@ app.post('/reviews', (req, res) => {
     .catch((error) => {
       res.sendStatus(400);
     });
-})
+});
 
 app.listen(port, () => {
-  console.log(`Atelier Reviews API listening on port ${port}`)
-})
+  console.log(`Atelier Reviews API listening on port ${port}`);
+});

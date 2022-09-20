@@ -25,7 +25,9 @@ const reviewSchema = new mongoose.Schema(
     response: String,
     photos: [{_id: false, id: Number, url: String }]
   },
-  {collection: 'reviews_transformed'}
+  {
+    collection: 'reviews_transformed',
+  },
 );
 
 // Create Review Photos Schema
@@ -34,9 +36,11 @@ const photoSchema = new mongoose.Schema(
     _id: Number,
     id: Number,
     review_id: Number,
-    url: String
+    url: String,
   },
-  {collection: 'reviews_photos'}
+  {
+    collection: 'reviews_photos',
+  },
 );
 
 
@@ -73,14 +77,14 @@ let getReviews = (queryParams) => {
   const { product_id, sort } = queryParams;
 
   if (sort === 'helpful') {
-    return Review.find({product_id: product_id}).sort({helpfulness: -1}).select({_id: 0});
+    return Review.find({product_id: product_id, reported: false}).sort({helpfulness: -1}).select({_id: 0});
 
   } else if (sort === 'newest') {
-    return Review.find({product_id: product_id}).sort({date: -1}).select({_id: 0});
+    return Review.find({product_id: product_id, reported: false}).sort({date: -1}).select({_id: 0});
   }
   // default sort is relevance
   else {
-    return Review.find({product_id: product_id}).sort({helpfulness: -1, date: -1}).select({_id: 0});
+    return Review.find({product_id: product_id, reported: false}).sort({helpfulness: -1, date: -1}).select({_id: 0});
   }
 
 }
