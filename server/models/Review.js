@@ -51,10 +51,22 @@ const photoSchema = new mongoose.Schema(
 //   {collection: 'characteristic_reviews'}
 // );
 
+
+// Create Characteristic Schema
+const characteristicSchema = new mongoose.Schema(
+  {
+    _id: Number,
+    product_id: Number,
+    name: String
+  },
+  {collection: 'characteristics_transformed'}
+);
+
 // Create models
 const Review = mongoose.model('Review', reviewSchema);
 const ReviewPhoto = mongoose.model('ReviewPhoto', photoSchema);
 // const CharacteristicReview = mongoose.model('CharacteristicReview', characteristicReviewSchema);
+const Characteristic = mongoose.model('Characteristic', characteristicSchema);
 
 // Create Database functions
 let getReviews = (queryParams) => {
@@ -136,8 +148,8 @@ let addNewReview = (bodyParams) => {
           url: photo.url
         };
       });
-      // console.log("New Review Body Parameters: ");
-      // console.log(bodyParams);
+      console.log("New Review Body Parameters: ");
+      console.log(bodyParams);
 
       return ReviewPhoto.insertMany(photos)
     })
@@ -165,10 +177,11 @@ let addNewReview = (bodyParams) => {
 
     // update reviews metadata
     .then(() => {
-      console.log("update review metadata here!");
+      // console.log("update review metadata here!");
       const product_id = bodyParams.product_id;
       return ReviewMeta.getReviewMeta({product_id: product_id})
         .then((reviewMetadata) => {
+          // Update ratings and recommendations
           console.log("Old Metadata:");
           let result = reviewMetadata[0];
           console.log(result);
@@ -176,9 +189,32 @@ let addNewReview = (bodyParams) => {
           let oldRecommend = Number(result['recommendations'][String(bodyParams.recommend)]);
           result.ratings[String(bodyParams.rating)] = String(oldRating + 1);
           result.recommendations[String(bodyParams.recommend)] = String(oldRecommend + 1);
-          console.log("New Metadata:");
-          console.log(result);
-        })
+
+          const numReviews = Number(result.recommendations["true"]) + Number(result.recommendations["false"]);
+          // console.log("NumReviews: ", numReviews);
+
+          // Update characteristics
+          Object.keys(bodyParams.characteristics).forEach((characteristic_id) => {
+            const characteristicValue = bodyParams.characteristics[characteristic_id];
+            Characteristic.find({_id: characteristic_id}).select({name: 1})
+              .then((characteristic_record) => {
+                // console.log(characteristic_record[0]);
+                const name = characteristic_record[0].name;
+                // console.log("Product Name: ", name);
+                const newValue = ((result.characteristics[name].value * numReviews) + characteristicValue) / (numReviews + 1);
+                // console.log("New Average Value: ", newValue);
+                result.characteristics[name].value = newValue;
+                console.log(result.characteristics[name]);
+              })
+              .then(() => {
+                console.log("New Metadata:");
+                console.log(result);
+                const newReviewMetadata = new ReviewMeta.ReviewMeta(result);
+                // return newReview.save();
+                return ReviewMeta.ReviewMeta.update({_id: product_id}, newReviewMetadata);
+              });
+          });
+        });
     })
 
     // save new review into database

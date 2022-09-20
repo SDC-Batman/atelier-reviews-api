@@ -6,6 +6,20 @@ db.characteristics_transformed.drop();
 // db.characteristic_reviews_transformed.getIndexes()
 // db.characteristics_transformed.getIndexes()
 
+// Replace auto generated _id with id in characteristics
+db.characteristics.aggregate([
+  {
+    $addFields: {
+      _id: "$id"
+    }
+  },
+
+  {
+    $out: "characteristic_reviews"
+  }
+
+]);
+
 // Replace auto generated _id with id
 db.characteristic_reviews.aggregate([
   {

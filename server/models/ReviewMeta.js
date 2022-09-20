@@ -37,4 +37,4 @@ let getReviewMeta = (queryParams) => {
   return ReviewMeta.find({_id: product_id}).select({_id: 0});
 }
 
-module.exports = { getReviewMeta };
+module.exports = { getReviewMeta, ReviewMeta };
