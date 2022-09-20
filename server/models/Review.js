@@ -23,9 +23,11 @@ const reviewSchema = new mongoose.Schema(
     recommend: Boolean,
     reported: Boolean,
     response: String,
-    photos: [{_id: false, id: Number, url: String }]
+    photos: [{ _id: false, id: Number, url: String }],
   },
-  {collection: 'reviews_transformed'}
+  {
+    collection: 'reviews_transformed',
+  },
 );
 
 // Create Review Photos Schema
@@ -34,11 +36,12 @@ const photoSchema = new mongoose.Schema(
     _id: Number,
     id: Number,
     review_id: Number,
-    url: String
+    url: String,
   },
-  {collection: 'reviews_photos'}
+  {
+    collection: 'reviews_photos',
+  },
 );
-
 
 // // Create Characteristic Reviews Schema
 // const characteristicReviewSchema = new mongoose.Schema(
@@ -51,15 +54,16 @@ const photoSchema = new mongoose.Schema(
 //   {collection: 'characteristic_reviews'}
 // );
 
-
 // Create Characteristic Schema
 const characteristicSchema = new mongoose.Schema(
   {
     _id: Number,
     product_id: Number,
-    name: String
+    name: String,
   },
-  {collection: 'characteristics_transformed'}
+  {
+    collection: 'characteristics_transformed',
+  },
 );
 
 // Create models
@@ -73,48 +77,44 @@ let getReviews = (queryParams) => {
   const { product_id, sort } = queryParams;
 
   if (sort === 'helpful') {
-    return Review.find({product_id: product_id}).sort({helpfulness: -1}).select({_id: 0});
-
-  } else if (sort === 'newest') {
-    return Review.find({product_id: product_id}).sort({date: -1}).select({_id: 0});
+    return Review.find({ product_id: product_id, reported: false })
+      .sort({ helpfulness: -1 })
+      .select({ _id: 0 });
+  } if (sort === 'newest') {
+    return Review.find({ product_id: product_id, reported: false })
+      .sort({ date: -1 })
+      .select({ _id: 0 });
   }
-  // default sort is relevance
-  else {
-    return Review.find({product_id: product_id}).sort({helpfulness: -1, date: -1}).select({_id: 0});
-  }
+  return Review.find({ product_id: product_id, reported: false })
+    .sort({ helpfulness: -1, date: -1 })
+    .select({ _id: 0 });
+};
 
-}
+let markHelpful = (review_id) => Review.findById({ _id: review_id })
+  .then((review) => {
+    const helpfulness = { helpfulness: review.helpfulness + 1 };
+    return Review.findOneAndUpdate({ _id: review_id }, helpfulness);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
-let markHelpful = (review_id) => {
-  return Review.findById({_id: review_id})
-    .then((review) => {
-      const helpfulness = { 'helpfulness': review.helpfulness + 1 };
-      return Review.findOneAndUpdate({_id: review_id}, helpfulness);
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-}
-
-let report = (review_id) => {
-  return Review.findById({_id: review_id})
-    .then((review) => {
-      const report = { 'reported': review.reported === false ? true : false };
-      return Review.findOneAndUpdate({_id: review_id}, report);
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-}
+let report = (review_id) => Review.findById({_id: review_id})
+  .then((review) => {
+    const reported = { reported: review.reported === false };
+    return Review.findOneAndUpdate({ _id: review_id }, reported);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 let addNewReview = (bodyParams) => {
-
   // add new fields to bodyParams object
-  bodyParams['reviewer_name'] = bodyParams.name;
-  bodyParams['reviewer_email'] = bodyParams.email;
-  bodyParams['helpfulness'] = 0;
-  bodyParams['reported'] = false;
-  bodyParams['response'] = null;
+  bodyParams.reviewer_name = bodyParams.name;
+  bodyParams.reviewer_email = bodyParams.email;
+  bodyParams.helpfulness = 0;
+  bodyParams.reported = false;
+  bodyParams.response = null;
 
   // delete extraneous fields
   delete bodyParams.name;
@@ -136,43 +136,20 @@ let addNewReview = (bodyParams) => {
       const photos = bodyParams.photos.map((photo, index) => {
         const new_review_photo_id = review_photo_id + index + 1;
         return new ReviewPhoto({
-            _id: new_review_photo_id,
-            id: new_review_photo_id,
-            review_id: bodyParams['review_id'],
-            url: photo
-          });
+          _id: new_review_photo_id,
+          id: new_review_photo_id,
+          review_id: bodyParams['review_id'],
+          url: photo,
         });
-      bodyParams['photos'] = photos.map((photo) => {
-        return {
-          id: photo._id,
-          url: photo.url
-        };
       });
+      bodyParams['photos'] = photos.map((photo) => ({
+        id: photo._id,
+        url: photo.url,
+      }));
       // console.log("New Review Body Parameters: ");
       // console.log(bodyParams);
       return ReviewPhoto.insertMany(photos)
     })
-
-    // save review characteristics object into database
-    // .then(() => {
-    //   return CharacteristicReview.find({}).sort({id: -1}).limit(1)
-    //     .then((characteristicReview) => {
-    //       let characteristic_review_id = characteristicReview[0]['id'];
-    //       const characteristicsArray = Object.keys(bodyParams.characteristics).map((characteristic_id, index) => {
-    //         let new_characteristic_review_id = characteristic_review_id + index + 1;
-    //         return {
-    //           _id: new_characteristic_review_id,
-    //           id: new_characteristic_review_id,
-    //           characteristic_id: Number(characteristic_id),
-    //           review_id: bodyParams.review_id,
-    //           value: bodyParams.characteristics[characteristic_id]
-    //         };
-    //       });
-    //       console.log("Review Characteristics");
-    //       console.log(characteristicsArray);
-    //       return CharacteristicReview.insertMany(characteristicsArray);
-    //     })
-    // })
 
     // update reviews metadata
     .then(() => {

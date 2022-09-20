@@ -1,70 +1,97 @@
 # Atlier Reviews API
 
+## Deployment Instructions:
+
 ### Create Database
 
-- [ ] Initialize npm to create `package.json`.
+1. Sign into [AWS](https://aws.amazon.com/) console and create a new EC2 instance.
+
+-
+
+2. Download the following packages:
+
+- Node.js and npm
   ```
-    npm init
+    sudo apt update
+    sudo apt install nodejs npm
   ```
 
-- [ ] Install mongoose DBMS.
+  Confirm successful install:
+  ```
+    node --version
+    npm --version
+  ```
+
+- MongoDB
+  ```
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+    sudo apt-get update
+
+    sudo apt-get install -y mongodb-org
+  ```
+  See more details in the official [MongoDB documentation](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/). Instructions for [troubleshooting issues](https://www.mongodb.com/docs/manual/reference/installation-ubuntu-community-troubleshooting/).
+
+- Mongosh
   ```
     npm install mongoose --save
   ```
 
-- [ ] Connect to Mongo DB.
-
-
-- [ ] Download data and add to `/data` folder.
-
-
-- [ ] Import test CSV data into MongoDB from command line.
-
+3. Clone the [Atelier Reviews API repository](https://github.com/SDC-Batman/atelier-reviews-api.git).
   ```
-  mongoimport -d reviews --collection="reviews_test" --type=json --jsonArray --file=reviews_test_handmade.json
+    git clone https://github.com/SDC-Batman/atelier-reviews-api.git
   ```
 
+4. Download projects data files:
   ```
-  mongoimport -d reviews --collection="reviews_photos_test" --type=csv --headerline --file=reviews_photos_test.csv
-  ```
-
-  ```
-  mongoimport -d reviews --collection="characteristic_reviews_test" --type=csv --headerline --columnsHaveTypes --fieldFile=reviews_field_file_with_types.txt --file=characteristic_reviews_test.csv
   ```
 
+5. Start MongoDB:
   ```
-  mongoimport -d reviews --collection="characteristics_test" --type=csv --headerline --file=characteristics_test.csv
-  ```
-
-  ```
-  mongoimport -d reviews --collection="reviews_test" --type=csv --headerline --file=reviews_test.csv
+    sudo service mongodb start
   ```
 
-
-- [ ] Import production CSV data into MongoDB from command line.
-
+  Verify process started successfully:
   ```
-  mongoimport -d reviews --collection="characteristics" --type=csv --headerline --file=characteristics.csv
-  ```
+    sudo service mongod status
 
   ```
-  mongoimport -d reviews --collection="characteristic_reviews" --type=csv --headerline --file=characteristic_reviews.csv
+
+6. Load data into database:
+  ```
+    npm run load-data
   ```
 
+7. Transform the data in the database with MongoDB aggregation pipelines:
   ```
-  mongoimport -d reviews --collection="reviews" --type=csv --headerline --file=reviews.csv
-  ```
-
-  ```
-  mongoimport -d reviews --collection="reviews_photos" --type=csv --headerline --file=reviews_photos.csv
+    npm run transform-data
   ```
 
-
-- [ ] Transform data via aggregation pipelines:
-
+8. Confirm data loaded and transformed correctly:
   ```
-    db.reviews_photos_test.aggregate([{$addFields: {"photos": {id: "$id", "url": "$url"} } }])
   ```
 
-  This will automatically store data in database `test`.
+### Create API Server
 
+1. Sign into [AWS](https://aws.amazon.com/) console and create a new EC2 instance.
+
+2. Download the following packages:
+
+- Node.js and npm
+  ```
+    sudo apt update
+    sudo apt install nodejs npm
+  ```
+
+  Confirm successful install:
+  ```
+    node --version
+    npm --version
+  ```
+
+3. Clone the [Atelier Reviews API repository](https://github.com/SDC-Batman/atelier-reviews-api.git).
+  ```
+    git clone https://github.com/SDC-Batman/atelier-reviews-api.git
+  ```
