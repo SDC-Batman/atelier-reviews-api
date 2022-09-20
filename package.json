@@ -6,6 +6,8 @@
   "scripts": {
     "server": "nodemon server/index.js",
     "load-testing": "k6 run tests/script.js",
+    "load-data": "bash ./db/load_data.sh",
+    "transform-data": "bash ./db/transform_data.sh",
     "lint": "eslint ."
   },
   "repository": {
