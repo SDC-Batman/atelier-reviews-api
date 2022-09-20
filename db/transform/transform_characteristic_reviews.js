@@ -15,24 +15,11 @@ db.characteristics.aggregate([
   },
 
   {
-    $out: "characteristic_reviews"
+    $out: "characteristics"
   }
 
 ]);
 
-// Replace auto generated _id with id
-db.characteristic_reviews.aggregate([
-  {
-    $addFields: {
-      _id: "$id"
-    }
-  },
-
-  {
-    $out: "characteristic_reviews"
-  }
-
-]);
 
 db.characteristic_reviews.createIndex( { review_id: 1} );
 db.characteristic_reviews.createIndex( { characteristic_id: 1} );
@@ -53,6 +40,7 @@ db.characteristic_reviews.aggregate(
     }
   ]
 );
+
 db.characteristic_reviews_transformed.createIndex( { characteristic_id: 1} );
 db.characteristic_reviews_transformed.getIndexes();
 
@@ -122,7 +110,7 @@ db.characteristic_reviews_transformed.aggregate(
       $addFields:
         {"characteristic":
           {
-              id: "$_id",
+              id: "$characteristic_id", // originally: "$_id"
               value: "$value"
           }
         }
@@ -186,7 +174,7 @@ db.characteristic_reviews_transformed.aggregate(
   ]
 );
 
-// add index for product_id
+// add indexes for product_id
 db.characteristic_reviews_transformed.createIndex( { product_id: 1} );
 
 // test
