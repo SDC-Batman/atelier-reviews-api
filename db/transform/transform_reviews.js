@@ -1,15 +1,24 @@
+// require('dotenv').config();
+// console.log(process.env);
+
+// // Open MongoDB shell
+// mongosh "mongodb://localhost:27017" + DB_NAME
+
 // select fields
 // modify id, date, and response fields
+
+
 db.reviews.aggregate(
   [
     {
       $project: {
-         _id: "$id",
-         product_id: 1,
-         rating: 1,
-         date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
-         summary: 1,
-         body: 1,
+        _id: "$id",
+        review_id: "$id",
+        product_id: 1,
+        rating: 1,
+        date: {$convert: {input: {$toDate: "$date"}, to: "string"}},
+        summary: 1,
+        body: 1,
         recommend: {
           $cond: {
             if: { $eq: ["$recommend", "true"]},
@@ -43,6 +52,9 @@ db.reviews.aggregate(
   ]
 );
 
+// Add indexes for review_id and product_id
+db.reviews_transformed.createIndex( { review_id: 1} );
+db.reviews_transformed.createIndex( { product_id: 1} );
 
 // join with reviews_photos_transformed to add photos
 db.reviews_transformed.aggregate(
@@ -58,10 +70,19 @@ db.reviews_transformed.aggregate(
     },
 
     {
+      $addFields: {
+        photos: { $arrayElemAt: [ "$photos", 0 ] }
+      }
+    },
+
+    {
+      $addFields: {
+        photos: "$photos.photos"
+      }
+    },
+
+    {
       $out: "reviews_transformed"
     }
   ]);
 
-
-// add index for product_id
-db.reviews_transformed.createIndex( { product_id: 1} );

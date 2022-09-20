@@ -20,9 +20,17 @@ app.use(bodyParser.json());
 
 // Get all reviews for a given product_id
 app.get('/reviews', (req, res) => {
-  Review.getReviews(req.query)
+
+  // get query params and set defaults
+  const queryParams = req.query;
+  queryParams.count = queryParams.count !== undefined ? queryParams.count : 5;
+  queryParams.page = queryParams.page !== undefined ? queryParams.page : 1;
+  const { count, page } = queryParams;
+
+  Review.getReviews(queryParams)
     .then((response) => {
-      res.json(response);
+      const results = response.slice((page-1)*count, page*count);
+      res.json(results);
     })
     .catch((error) => {
       res.sendStatus(400);
@@ -68,11 +76,9 @@ app.put('/reviews/:review_id/report', (req, res) => {
 app.post('/reviews', (req, res) => {
   Review.addNewReview(req.body)
     .then((response) => {
-      console.log(response);
       res.sendStatus(201);
     })
     .catch((error) => {
-      console.log(error);
       res.sendStatus(400);
     });
 })
