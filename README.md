@@ -43,9 +43,14 @@
     sudo apt-get install -y mongodb-mongosh
   ```
 
+4. Install MongoDB Database Tools:
+  ```
+  sudo dpkg -l mongodb-database-tools
+  ```
+
 4. Start MongoDB:
   ```
-    sudo service mongodb start
+    sudo service mongod start
   ```
 
   Verify process started successfully:
@@ -62,7 +67,7 @@
     use reviews;
   ```
 
-
+### OPTION #1: Build the database from source files
 
 6. Load data into database:
   ```
@@ -77,6 +82,27 @@
 8. Confirm data loaded and transformed correctly:
   ```
   ```
+
+### OPTION #2: Use MongoDB Utilities to copy the database from local to remote EC2
+
+9. Dump the MongoDB with `mongodump` from your local machine:
+
+```
+  cd /data/backup
+  mongodump -d=reviews
+```
+
+10. Transfer the dumped MongoDB by connecting to remote EC2 instance.
+```
+  chmod 400 Atelier-Reviews-Database-New.pem
+  scp -i Atelier-Reviews-Database-New.pem -r reviews ubuntu@ec2-54-196-8-197.compute-1.amazonaws.com:~/data
+```
+
+11. Restore the MongoDB on the remote EC2 instance from the MongoDB dump.
+```
+  cd data
+  mongorestore -d=reviews reviews
+```
 
 ### Create API Server
 
