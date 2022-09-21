@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/' + process.env.DB_NAME);
+mongoose.connect(process.env.DB_URI_STRING + process.env.DB_NAME);
 
 // Create Reviews Schema and Model
 const metaSchema = new mongoose.Schema(
