@@ -6,8 +6,6 @@
 
 1. Sign into [AWS](https://aws.amazon.com/) console and create a new EC2 instance.
 
--
-
 2. Download the following packages:
 
 - Node.js and npm
@@ -36,19 +34,16 @@
 
 - Mongosh
   ```
-    npm install mongoose --save
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+    sudo apt-get update
+
+    sudo apt-get install -y mongodb-mongosh
   ```
 
-3. Clone the [Atelier Reviews API repository](https://github.com/SDC-Batman/atelier-reviews-api.git).
-  ```
-    git clone https://github.com/SDC-Batman/atelier-reviews-api.git
-  ```
-
-4. Download projects data files:
-  ```
-  ```
-
-5. Start MongoDB:
+4. Start MongoDB:
   ```
     sudo service mongodb start
   ```
@@ -58,6 +53,16 @@
     sudo service mongod status
 
   ```
+
+5. Create `reviews` database with Mongosh:
+  ```
+    mongosh
+  ```
+  ```
+    use reviews;
+  ```
+
+
 
 6. Load data into database:
   ```
