@@ -90,6 +90,10 @@
 ```
   cd /data/backup
   mongodump -d=reviews
+
+  // Single collection
+  mongodump -d=reviews -c=reviews_transfo
+rmed
 ```
 
 10. Transfer the dumped MongoDB by connecting to remote EC2 instance.
@@ -101,6 +105,8 @@
 
   // individual files
   scp -i Atelier-Reviews-Database.pem reviews_transformed.bson ubuntu@ec2-54-159-194-148.compute-1.amazonaws.com:~/data
+
+  scp -i Atelier-Reviews-Database-Oregon.pem reviews_meta.bson ubuntu@ec2-18-237-173-10.us-west-2.compute.amazonaws.com:~/data/reviews
 ```
 
 11. Restore the MongoDB on the remote EC2 instance from the MongoDB dump.
