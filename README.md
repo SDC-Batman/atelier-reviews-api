@@ -192,3 +192,20 @@ Restart MongoDB on the EC2.
 
 
 ```
+
+
+### Create Nginx Load Balancer
+
+1. Create Amazon EC2 Instance
+
+
+2. Install nginx:
+```
+  sudo apt update
+  sudo apt install nginx
+```
+
+3. Ensure the system is running:
+  ```
+  sudo service nginx status
+  ```
