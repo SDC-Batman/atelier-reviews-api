@@ -85,8 +85,8 @@ app.post('/reviews', (req, res) => {
 });
 
 // add loader.io for stress testing
-app.get('/' + process.env.LOADER_TOKEN, (req, res) => {
-  res.send('loaderio-10812f4e3c21909adb4a90864d3779fa');
+app.get('/' + process.env.LOADER_TOKEN + '.txt', (req, res) => {
+  res.send(LOADER_TOKEN);
 });
 
 app.listen(port, () => {
