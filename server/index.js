@@ -18,6 +18,7 @@ const port = process.env.PORT | 3000;
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(morgan('dev'));
 
 // Get all reviews for a given product_id
 app.get('/reviews', (req, res) => {
