@@ -142,6 +142,7 @@ rmed
 
 4. Load project dependencies.
   ```
+    cd atelier-reviews-api
     npm install
   ```
 
@@ -150,6 +151,11 @@ rmed
     sudo vim .env
     // press i
     // Paste env parameters
+  ```
+
+6. Run the server
+  ```
+    npm run server
   ```
 
 
