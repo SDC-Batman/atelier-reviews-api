@@ -134,7 +134,20 @@
     git clone https://github.com/SDC-Batman/atelier-reviews-api.git
   ```
 
-4. Now, ssh into your MongoDB EC2 instance.
+4. Load project dependencies.
+  ```
+    npm install
+  ```
+
+5. Create a .env file with your MongoDB EC2 connection string
+  ```
+    sudo vim .env
+    // press i
+    // Paste env parameters
+  ```
+
+
+6. Now, ssh into your MongoDB EC2 instance.
 
 - Create a new user with password.
   ```
@@ -173,5 +186,3 @@ Restart MongoDB on the EC2.
 
 
 ```
-
-4. Create a .env file with your MongoDB EC2 connection string
