@@ -5,7 +5,12 @@ const mongoose = require('mongoose');
 const ReviewMeta = require('./ReviewMeta.js');
 
 // Connect to MongoDB
-mongoose.connect(process.env.DB_URI_STRING + process.env.DB_NAME);
+const options = {
+  user: process.env.DB_USER,
+  pass: process.env.DB_PASS,
+};
+// mongoose.connect(process.env.DB_URI_STRING + process.env.DB_NAME);
+mongoose.connect(process.env.REMOTE_DB_URI_STRING, options);
 
 // Create Reviews Schema
 const reviewSchema = new mongoose.Schema(
