@@ -94,14 +94,21 @@
 
 10. Transfer the dumped MongoDB by connecting to remote EC2 instance.
 ```
-  chmod 400 Atelier-Reviews-Database-New.pem
-  scp -i Atelier-Reviews-Database-New.pem -r reviews ubuntu@ec2-54-196-8-197.compute-1.amazonaws.com:~/data
+  chmod 400 Atelier-Reviews-Database.pem
+
+  // entire folder
+  scp -i Atelier-Reviews-Database.pem -r reviews ubuntu@ec2-54-159-194-148.compute-1.amazonaws.com:~/data
+
+  // individual files
+  scp -i Atelier-Reviews-Database.pem reviews_transformed.bson ubuntu@ec2-54-159-194-148.compute-1.amazonaws.com:~/data
 ```
 
 11. Restore the MongoDB on the remote EC2 instance from the MongoDB dump.
 ```
   cd data
-  mongorestore -d=reviews reviews
+  mongorestore -d=reviews --drop reviews
+
+
 ```
 
 ### Create API Server
@@ -126,3 +133,45 @@
   ```
     git clone https://github.com/SDC-Batman/atelier-reviews-api.git
   ```
+
+4. Now, ssh into your MongoDB EC2 instance.
+
+- Create a new user with password.
+  ```
+    db.createUser({
+      user: 'thomashepner',
+      pwd: 'YOUR PASSWORD HERE',
+      roles: [{ role: 'readWrite', db:'reviews'}]
+    });
+
+  ```
+
+- Enable authorization of the MongoDB.
+```
+  sudo vim /etc/mongod.conf
+```
+
+```
+  # network interfaces
+  net:
+    port: 27017
+    bindIp: 0.0.0.0
+
+  security:
+  authorization: 'enabled'
+```
+
+Restart MongoDB on the EC2.
+```
+   sudo service mongod start
+   sudo service mongod status
+```
+
+- Login with authentication:
+```
+  mongosh "mongodb://54.159.194.148:27017/reviews" --username thomashepner -p <INSERT PASSWORD HERE>
+
+
+```
+
+4. Create a .env file with your MongoDB EC2 connection string
