@@ -99,7 +99,7 @@ const markHelpful = (review_id) => Review.findById({ _id: review_id })
     console.log(error);
   });
 
-const report = (review_id) => Review.findById({_id: review_id})
+const report = (review_id) => Review.findById({ _id: review_id })
   .then((review) => {
     const reported = { reported: review.reported === false };
     return Review.findOneAndUpdate({ _id: review_id }, reported);
@@ -121,7 +121,7 @@ const addNewReview = (bodyParams) => {
   delete bodyParams.email;
 
   // get total number of reviews to construct new review_id
-  return Review.find({}).sort({review_id: -1}).limit(1)
+  return Review.find({}).sort({ review_id: -1 }).limit(1)
     .then((review) => {
       const review_id = Number(review[0].review_id) + 1;
       bodyParams.review_id = review_id;
@@ -152,7 +152,7 @@ const addNewReview = (bodyParams) => {
     // update reviews metadata
     .then(() => {
       const { product_id } = bodyParams;
-      return ReviewMeta.getReviewMeta({product_id: product_id})
+      return ReviewMeta.getReviewMeta({ product_id: product_id })
         .then((reviewMetadata) => {
           const result = reviewMetadata[0];
 
