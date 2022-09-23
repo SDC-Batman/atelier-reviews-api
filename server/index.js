@@ -47,7 +47,8 @@ app.get('/reviews', (req, res) => {
 app.get('/reviews/meta', (req, res) => {
   ReviewMeta.getReviewMeta(req.query)
     .then((response) => {
-      res.json(response);
+      const results = { product_id: String(req.query.product_id), ...response[0]._doc };
+      res.json(results);
     })
     .catch((error) => {
       res.sendStatus(400);
