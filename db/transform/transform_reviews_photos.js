@@ -1,6 +1,6 @@
- // Add indexes to reviews_photos
- db.reviews_photos.createIndex( { review_id: 1} );
- db.reviews_photos.createIndex( { id: 1} );
+// Add indexes to reviews_photos
+db.reviews_photos.createIndex( { review_id: 1} );
+db.reviews_photos.createIndex( { id: 1} );
 
 // Replace auto generated _id with id
 db.reviews_photos.aggregate([

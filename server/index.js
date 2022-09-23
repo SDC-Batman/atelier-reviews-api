@@ -1,15 +1,15 @@
+/* eslint-disable import/extensions */
+/* eslint-disable no-bitwise */
+/* eslint-disable camelcase */
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-// const mongoose = require('mongoose');
 
 // Import models
 const Review = require('./models/Review.js');
 const ReviewMeta = require('./models/ReviewMeta.js');
-// import express from 'express';
-// import bodyParser from 'body-parser';
-// import mongoose from 'mongoose';
 
 // Serve app
 const app = express();
@@ -30,7 +30,12 @@ app.get('/reviews', (req, res) => {
 
   Review.getReviews(queryParams)
     .then((response) => {
-      const results = response.slice((page-1)*count, page*count);
+      const results = {
+        product: String(queryParams.product_id),
+        page: queryParams.page,
+        count: queryParams.count,
+        results: response.slice((page - 1) * count, page * count),
+      };
       res.json(results);
     })
     .catch((error) => {
@@ -42,7 +47,8 @@ app.get('/reviews', (req, res) => {
 app.get('/reviews/meta', (req, res) => {
   ReviewMeta.getReviewMeta(req.query)
     .then((response) => {
-      res.json(response);
+      const results = { product_id: String(req.query.product_id), ...response[0]._doc };
+      res.json(results);
     })
     .catch((error) => {
       res.sendStatus(400);
@@ -63,7 +69,7 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
 
 // report a review
 app.put('/reviews/:review_id/report', (req, res) => {
-  const review_id = req.params.review_id;
+  const { review_id } = req.params;
   Review.report(review_id)
     .then((response) => {
       res.sendStatus(201);
@@ -85,8 +91,8 @@ app.post('/reviews', (req, res) => {
 });
 
 // add loader.io for stress testing
-app.get('/' + process.env.LOADER_TOKEN + '.txt', (req, res) => {
-  res.send(LOADER_TOKEN);
+app.get(`/${process.env.LOADER_TOKEN}.txt`, (req, res) => {
+  res.send(process.env.LOADER_TOKEN);
 });
 
 app.listen(port, () => {
