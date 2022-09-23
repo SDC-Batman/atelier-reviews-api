@@ -30,7 +30,12 @@ app.get('/reviews', (req, res) => {
 
   Review.getReviews(queryParams)
     .then((response) => {
-      const results = response.slice((page-1)*count, page*count);
+      const results = {
+        product: String(queryParams.product_id),
+        page: queryParams.page,
+        count: queryParams.count,
+        results: response.slice((page - 1) * count, page * count),
+      };
       res.json(results);
     })
     .catch((error) => {
