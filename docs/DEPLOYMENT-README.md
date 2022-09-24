@@ -1,6 +1,4 @@
-# Atelier Reviews Service
-
-## Deployment Instructions:
+# Atelier Reviews Service - Deployment Instructions
 
 ### Create Mongo Database
 
