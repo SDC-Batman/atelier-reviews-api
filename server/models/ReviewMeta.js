@@ -16,8 +16,10 @@ mongoose.connect(process.env.REMOTE_DB_URI_STRING, options);
 const metaSchema = new mongoose.Schema(
   {
     _id: Number,
-    ratings: { '1': String, '2': String, '3': String, '4': String, '5': String },
-    recommendations: { 'true': String, 'false': String },
+    ratings: {
+      '1': String, '2': String, '3': String, '4': String, '5': String
+    },
+    recommended: { 'true': String, 'false': String },
     characteristics: {
       Fit: {
         id: Number, value: Number,

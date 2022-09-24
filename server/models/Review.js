@@ -157,14 +157,14 @@ const addNewReview = (bodyParams) => {
           const result = reviewMetadata[0];
 
           let oldRating = Number(result.ratings[String(bodyParams.rating)]);
-          let oldRecommend = Number(result.recommendations[String(bodyParams.recommend)]);
+          let oldRecommend = Number(result.recommended[String(bodyParams.recommend)]);
           oldRating = Number.isNaN(oldRating) ? 0 : oldRating;
           oldRecommend = Number.isNaN(oldRecommend) ? 0 : oldRecommend;
 
           result.ratings[String(bodyParams.rating)] = String(oldRating + 1);
-          result.recommendations[String(bodyParams.recommend)] = String(oldRecommend + 1);
+          result.recommended[String(bodyParams.recommend)] = String(oldRecommend + 1);
 
-          const numReviews = Number(result.recommendations.true) + Number(result.recommendations.false);
+          const numReviews = Number(result.recommended.true) + Number(result.recommended.false);
 
           // Update characteristics
           Object.keys(bodyParams.characteristics).forEach((characteristic_id) => {
